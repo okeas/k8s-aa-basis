@@ -1,0 +1,39 @@
+### Go template
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+
+.vagrant
+.vagrant/*
+etcd-v3.4.14
+etcd-v3.4.14/
+master/
+node/
+ssltool/
+/.idea
+/.idea/*
+.idea
+.idea/*
+src/.idea
+src/.idea/*
+src/demo01/myhook
+/istio/*
+/istio
+/build
+/build/*
+/dist
+/dist/*
+k8susers/
