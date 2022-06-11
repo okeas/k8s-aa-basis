@@ -37,3 +37,7 @@ src/demo01/myhook
 /dist
 /dist/*
 k8susers/
+
+/certs
+/certs/*
+certs/*
