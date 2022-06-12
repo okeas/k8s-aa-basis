@@ -56,4 +56,6 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 
 查看自定义`aa`服务响应是否正常`kb get --raw "/apis/apis.jtthink.com/v1beta1"`
 
+目前代码停止于`v1.0`
+
 
