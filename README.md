@@ -58,4 +58,7 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 
 目前代码停止于`v1.0`
 
+#### 自定义字段
+
+查看`v1.1`
 

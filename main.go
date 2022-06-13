@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	"strings"
 )
@@ -73,12 +74,29 @@ func main() {
 		c.String(200, json)
 	})
 
-	//详细 （根据ns)  kb get mp testpod1 -o yaml
+	//详细 （根据ns)  kb get mp testpod1
 	r.GET("/apis/apis.jtthink.com/v1beta1/namespaces/:ns/mypods/:name", func(c *gin.Context) {
-		c.Header("content-type", "application/json")
-		json := strings.Replace(podDetail, "{namespace}", c.Param("ns"), -1)
-		json = strings.Replace(json, "{name}", c.Param("name"), -1)
-		c.String(200, json)
+		//c.Header("content-type", "application/json")
+		//json := strings.Replace(podDetail, "{namespace}", c.Param("ns"), -1)
+		//json = strings.Replace(json, "{name}", c.Param("name"), -1)
+		//c.String(200, json)
+
+		// 自定义字段
+		t := metav1.Table{}
+		t.Kind = "Table"
+		t.APIVersion = "meta.k8s.io/v1"
+		// 列
+		t.ColumnDefinitions = []metav1.TableColumnDefinition{
+			{Name: "name", Type: "string"},
+			{Name: "命令空间", Type: "string"},
+			{Name: "状态", Type: "string"},
+		}
+
+		// 内容
+		t.Rows = []metav1.TableRow{
+			{Cells: []interface{}{c.Param("name"), c.Param("ns"), "ready"}},
+		}
+		c.JSON(200, t)
 	})
 
 	//  8443  没有为啥

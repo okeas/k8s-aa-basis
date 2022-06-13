@@ -3,3 +3,4 @@ run:
 	cp myapi /Users/zx/Desktop/vagrant-k8s/project/
 	kubectl delete -f yamls/deploy.yaml
 	kubectl apply -f yamls/deploy.yaml
+	rm -rf ./myapi
