@@ -1,6 +1,6 @@
 # k8s-aa-basis
 
-### 基础介绍
+### 基础介绍 V1
 
 使用聚合`api`访问`apiserver`
 
@@ -11,7 +11,7 @@
 
 查看`api`列表：`kb get --raw "/" | jq`
 
-特殊的`/api/v1` 对应的就是 `/core/v1` 系统自带资源，而其他的资源大多数以`/apis/`开头，如 `"/apis/apps/v1/deployments"` 
+特殊的`/api/v1` 对应的就是 `/core/v1` 系统自带资源，而其他的资源大多数以`/apis/`开头，如 `"/apis/apps/v1/deployments"`
 
 ### 开启功能
 
@@ -65,3 +65,27 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 #### 根据标签获取
 
 查看`v1.2`内`main.go`
+
+### 进阶-Ingress案例 v2
+
+`v1`中`main.go`文件内，为了快速演示，以`json`字符串的方式保存了数据，实例上应该使用结构体对象的方式
+
+`v2`的资源名称为`myingress`，短名称`mi`
+
+引入代码
+
+<table>
+    <tr>
+        <td>目录</td>
+        <td>介绍</td>
+    </tr>
+    <tr>
+        <td>pkg/apis</td>
+        <td>通过code-generator生成的apis对象代码</td>
+    </tr>
+    <tr>
+        <td>pkg/store</td>
+        <td>数据存储的位置，一般储存与etcd，但本示例存储与内存中，重启数据将会消失</td>
+    </tr>
+</table>
+

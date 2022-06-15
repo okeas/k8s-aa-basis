@@ -3,11 +3,23 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"k8s-aa-basis/pkg/apis/myingress/v1beta1"
+	"k8s-aa-basis/pkg/builders"
+	"k8s-aa-basis/pkg/store"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	"strings"
 )
 
+var rootJson = `
+{
+  "kind":"APIResourceList",
+  "apiVersion":"v1",
+  "groupVersion":"apis.jtthink.com/v1beta1",
+  "resources":[
+     {"name":"mypods","singularName":"mypod","shortNames":["mp"],"namespaced":true,"kind":"MyPod","verbs":["get","list"]}
+  ]}
+`
 var podsListv2 = `
 {
   "kind": "MyPodList",
@@ -50,24 +62,29 @@ var podsListv1 = `
    ]
 }
 `
-
-var rootJson = `
-{
-  "kind":"APIResourceList",
-  "apiVersion":"v1",
-  "groupVersion":"apis.jtthink.com/v1beta1",
-  "resources":[
-     {"name":"mypods","singularName":"mypod","shortNames":["mp"],"namespaced":true,"kind":"MyPod","verbs":["get","list"]}
-  ]}
-`
 var podDetail = `
 {
   "kind": "MyPod",
   "apiVersion": "apis.jtthink.com/v1beta1",
   "metadata": {"name":"{name}","namespace":"{namespace}"},
-  "spec":{"属性":"你懂的"}
+  "spec":{"属性":"你懂的"},
+  "columnDefinitions": [
+        {
+            "name": "Name",
+            "type": "string"
+        },
+        {
+            "name": "Created At",
+            "type": "date"
+        }
+    ]
 }
 `
+
+var (
+	ROOTURL      = fmt.Sprintf("/apis/%s/%s", v1beta1.SchemeGroupVersion.Group, v1beta1.SchemeGroupVersion.Version)
+	ListByNS_URL = fmt.Sprintf("/apis/%s/%s/namespaces/:ns/%s", v1beta1.SchemeGroupVersion.Group, v1beta1.SchemeGroupVersion.Version, v1beta1.ResourceName)
+)
 
 //把 xx=xx,xx=xxx  解析为一个map
 func parseLabelQuery(query string) map[string]string {
@@ -96,43 +113,35 @@ func main() {
 		c.Next()
 	})
 
-	r.GET("/apis/apis.jtthink.com/v1beta1", func(c *gin.Context) {
-		c.Header("content-type", "application/json")
-		c.String(200, rootJson)
+	// 根
+	r.GET(ROOTURL, func(c *gin.Context) {
+		c.JSON(200, builders.ApiResourceList())
 	})
 
 	//列表  （根据ns)  kb get mp -l app=nginx,version=1 指定标签
-	r.GET("/apis/apis.jtthink.com/v1beta1/namespaces/:ns/mypods", func(c *gin.Context) {
+	r.GET(ListByNS_URL, func(c *gin.Context) {
 		//解析出query 参数(labelQuery)
-		c.Header("content-type", "application/json")
-		labelQueryMap := parseLabelQuery(c.Query("labelSelector"))
-		json := ""
-		if v, ok := labelQueryMap["version"]; ok {
-			if v == "1" {
-				json = strings.Replace(podsListv1, "default", c.Param("ns"), -1)
-			}
-		}
-		if json == "" {
-			json = strings.Replace(podsListv2, "default", c.Param("ns"), -1)
-		}
-
-		c.String(200, json)
+		//labelQueryMap := parseLabelQuery(c.Query("labelSelector"))
+		//json := ""
+		//if v, ok := labelQueryMap["version"]; ok {
+		//	if v == "1" {
+		//		json = strings.Replace(podsListv1, "default", c.Param("ns"), -1)
+		//	}
+		//}
+		//if json == "" {
+		//	json = strings.Replace(podsListv2, "default", c.Param("ns"), -1)
+		//}
+		c.JSON(200, store.ListMemData(c.Param("ns")))
 	})
 
 	//列表  （所有 ) kb get mp -A
 	r.GET("/apis/apis.jtthink.com/v1beta1/mypods", func(c *gin.Context) {
-		c.Header("content-type", "application/json")
 		json := strings.Replace(podsListv1, "default", "all", -1)
-		c.String(200, json)
+		c.JSON(200, json)
 	})
 
 	//详细 （根据ns)  kb get mp testpod1
 	r.GET("/apis/apis.jtthink.com/v1beta1/namespaces/:ns/mypods/:name", func(c *gin.Context) {
-		//c.Header("content-type", "application/json")
-		//json := strings.Replace(podDetail, "{namespace}", c.Param("ns"), -1)
-		//json = strings.Replace(json, "{name}", c.Param("name"), -1)
-		//c.String(200, json)
-
 		// 自定义字段
 		t := metav1.Table{}
 		t.Kind = "Table"
