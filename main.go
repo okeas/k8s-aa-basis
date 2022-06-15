@@ -8,6 +8,49 @@ import (
 	"strings"
 )
 
+var podsListv2 = `
+{
+  "kind": "MyPodList",
+  "apiVersion": "apis.jtthink.com/v1beta1",
+  "metadata": {},
+  "items":[
+    {
+	  "metadata": {
+        "name": "testpod1-v2",
+        "namespace": "default"
+       }
+    },
+    {
+	  "metadata": {
+        "name": "testpod2-v2",
+        "namespace": "default"
+       }
+    }
+   ]
+}
+`
+var podsListv1 = `
+{
+  "kind": "MyPodList",
+  "apiVersion": "apis.jtthink.com/v1beta1",
+  "metadata": {},
+  "items":[
+    {
+	  "metadata": {
+        "name": "testpod1-v1",
+        "namespace": "default"
+       }
+    },
+    {
+	  "metadata": {
+        "name": "testpod2-v1",
+        "namespace": "default"
+       }
+    }
+   ]
+}
+`
+
 var rootJson = `
 {
   "kind":"APIResourceList",
@@ -17,27 +60,6 @@ var rootJson = `
      {"name":"mypods","singularName":"mypod","shortNames":["mp"],"namespaced":true,"kind":"MyPod","verbs":["get","list"]}
   ]}
 `
-var podsList = `
-{
-  "kind": "MyPodList",
-  "apiVersion": "apis.jtthink.com/v1beta1",
-  "metadata": {},
-  "items":[
-    {
-	  "metadata": {
-        "name": "testpod1",
-        "namespace": "default"
-       }
-    },
-    {
-	  "metadata": {
-        "name": "testpod2",
-        "namespace": "default"
-       }
-    }
-   ]
-}
-`
 var podDetail = `
 {
   "kind": "MyPod",
@@ -46,6 +68,25 @@ var podDetail = `
   "spec":{"属性":"你懂的"}
 }
 `
+
+//把 xx=xx,xx=xxx  解析为一个map
+func parseLabelQuery(query string) map[string]string {
+	m := make(map[string]string)
+	if query == "" {
+		return m
+	}
+	qs := strings.Split(query, ",")
+	if len(qs) == 0 {
+		return m
+	}
+	for _, q := range qs {
+		qPair := strings.Split(q, "=")
+		if len(qPair) == 2 {
+			m[qPair[0]] = qPair[1]
+		}
+	}
+	return m
+}
 
 func main() {
 
@@ -60,17 +101,28 @@ func main() {
 		c.String(200, rootJson)
 	})
 
-	//列表  （根据ns)
+	//列表  （根据ns)  kb get mp -l app=nginx,version=1 指定标签
 	r.GET("/apis/apis.jtthink.com/v1beta1/namespaces/:ns/mypods", func(c *gin.Context) {
+		//解析出query 参数(labelQuery)
 		c.Header("content-type", "application/json")
-		json := strings.Replace(podsList, "default", c.Param("ns"), -1)
+		labelQueryMap := parseLabelQuery(c.Query("labelSelector"))
+		json := ""
+		if v, ok := labelQueryMap["version"]; ok {
+			if v == "1" {
+				json = strings.Replace(podsListv1, "default", c.Param("ns"), -1)
+			}
+		}
+		if json == "" {
+			json = strings.Replace(podsListv2, "default", c.Param("ns"), -1)
+		}
+
 		c.String(200, json)
 	})
 
 	//列表  （所有 ) kb get mp -A
 	r.GET("/apis/apis.jtthink.com/v1beta1/mypods", func(c *gin.Context) {
 		c.Header("content-type", "application/json")
-		json := strings.Replace(podsList, "default", "all", -1)
+		json := strings.Replace(podsListv1, "default", "all", -1)
 		c.String(200, json)
 	})
 

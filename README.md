@@ -60,5 +60,8 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 
 #### 自定义字段
 
-查看`v1.1`
+查看`v1.1`内`main.go`
 
+#### 根据标签获取
+
+查看`v1.2`内`main.go`
