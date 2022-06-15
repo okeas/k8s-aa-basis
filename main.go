@@ -6,6 +6,7 @@ import (
 	"k8s-aa-basis/pkg/apis/myingress/v1beta1"
 	"k8s-aa-basis/pkg/builders"
 	"k8s-aa-basis/pkg/store"
+	"k8s-aa-basis/pkg/utils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	"strings"
@@ -118,29 +119,17 @@ func main() {
 		c.JSON(200, builders.ApiResourceList())
 	})
 
-	//列表  （根据ns)  kb get mp -l app=nginx,version=1 指定标签
+	//列表  （根据ns)  kb get mi -n kube-public
 	r.GET(ListByNS_URL, func(c *gin.Context) {
-		//解析出query 参数(labelQuery)
-		//labelQueryMap := parseLabelQuery(c.Query("labelSelector"))
-		//json := ""
-		//if v, ok := labelQueryMap["version"]; ok {
-		//	if v == "1" {
-		//		json = strings.Replace(podsListv1, "default", c.Param("ns"), -1)
-		//	}
-		//}
-		//if json == "" {
-		//	json = strings.Replace(podsListv2, "default", c.Param("ns"), -1)
-		//}
-		c.JSON(200, store.ListMemData(c.Param("ns")))
+		c.JSON(200, utils.ConvertToTable(store.ListMemData(c.Param("ns"))))
 	})
 
-	//列表  （所有 ) kb get mp -A
-	r.GET("/apis/apis.jtthink.com/v1beta1/mypods", func(c *gin.Context) {
-		json := strings.Replace(podsListv1, "default", "all", -1)
-		c.JSON(200, json)
+	//列表  （所有 ) kb get mi -A
+	r.GET(fmt.Sprintf("/apis/%s/%s/%s", v1beta1.SchemeGroupVersion.Group, v1beta1.SchemeGroupVersion.Version, v1beta1.ResourceName), func(c *gin.Context) {
+		c.JSON(200, store.ListAllMemData())
 	})
 
-	//详细 （根据ns)  kb get mp testpod1
+	//详细 （根据ns)  kb get mi testpod1
 	r.GET("/apis/apis.jtthink.com/v1beta1/namespaces/:ns/mypods/:name", func(c *gin.Context) {
 		// 自定义字段
 		t := metav1.Table{}

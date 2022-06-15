@@ -13,11 +13,22 @@ func init() {
 	MemData = make(map[string][]*v1beta1.MyIngress)
 	//添加一个固定的测试--- 为了演示
 	test := &v1beta1.MyIngress{}
-	test.Name = "test"
+	test.Name = "test01"
 	test.Namespace = "default"
 	test.Spec.Path = "testpath"
 	createMemData(test)
 
+	test2 := &v1beta1.MyIngress{}
+	test2.Name = "test02"
+	test2.Namespace = "default"
+	test2.Spec.Path = "sssss"
+	createMemData(test2)
+
+	test3 := &v1beta1.MyIngress{}
+	test3.Name = "test03"
+	test3.Namespace = "kube-public"
+	test3.Spec.Path = "/sqsas"
+	createMemData(test3)
 }
 
 // 创建 数据
@@ -43,5 +54,16 @@ func findByNameSpace(ns string) []*v1beta1.MyIngress {
 func ListMemData(ns string) *v1beta1.MyIngressList {
 	list := v1beta1.NewMyIngressList()
 	list.Items = findByNameSpace(ns)
+	return list
+}
+
+// 所有命名空间的数据
+func ListAllMemData() *v1beta1.MyIngressList {
+	list := v1beta1.NewMyIngressList()
+
+	for _, ingresses := range MemData {
+		list.Items = append(list.Items, ingresses...)
+	}
+
 	return list
 }

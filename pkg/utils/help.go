@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"fmt"
 	"k8s-aa-basis/pkg/apis/myingress/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var (
-	Table_ListColumns = []string{"名称", "命名空间", "Path", "Host"}
+	Table_ListColumns = []string{"name", "namespace", "path", "host"}
 )
 
 // 把列表 或单资源 变成表格化
@@ -24,6 +25,7 @@ func ConvertToTable(obj interface{}) *metav1.Table {
 		//设置 行  数据
 		rows := make([]metav1.TableRow, len(v.Items))
 		for i, item := range v.Items {
+			fmt.Println(item)
 			rows[i] = metav1.TableRow{
 				Cells: []interface{}{item.Name, item.Namespace, item.Spec.Path, item.Spec.Host},
 			}
