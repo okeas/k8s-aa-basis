@@ -4,6 +4,6 @@ metadata:
   name: mi12
   namespace: default
 spec:
-  host: abc.com
+  host: abcs1.com
   path: /
   service: test:9090
