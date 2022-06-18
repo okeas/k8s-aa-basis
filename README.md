@@ -103,8 +103,6 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 
 `kb apply -f yamls/mi.yaml` 创建了`mi`资源后，会自动增加一个`ingress`
 
-
-
 见`v2.2`
 
 
