@@ -13,6 +13,7 @@ spec:
       labels:
         app: myapi
     spec:
+      serviceAccountName: jtthink-aa-sa
       nodeName: node01
       containers:
         - name: myapi
@@ -20,6 +21,9 @@ spec:
           imagePullPolicy: IfNotPresent
           command: ["./myapi"]
           workingDir: "/app"
+          env:
+            - name: release
+              value: "1"
           ports:
             - containerPort: 8443
           volumeMounts:

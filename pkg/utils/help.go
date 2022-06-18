@@ -10,6 +10,30 @@ var (
 	Table_ListColumns = []string{"name", "namespace", "path", "host"}
 )
 
+func NotFoundStatus(msg string) *metav1.Status {
+	s := &metav1.Status{
+		Code:    404,
+		Message: msg,
+		Reason:  metav1.StatusReasonNotFound,
+		Status:  "Failure",
+	}
+	s.Kind = "Status"
+	s.APIVersion = "v1"
+	return s
+}
+
+func ErrorStatus(code int32, msg string, reason metav1.StatusReason) *metav1.Status {
+	s := &metav1.Status{
+		Code:    code,
+		Message: msg,
+		Reason:  reason,
+		Status:  "Failure",
+	}
+	s.Kind = "Status"
+	s.APIVersion = "v1"
+	return s
+}
+
 // 把列表 或单资源 变成表格化
 func ConvertToTable(obj interface{}) *metav1.Table {
 	t := &metav1.Table{}

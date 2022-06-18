@@ -1,7 +1,10 @@
 package k8sconfig
 
 import (
+	"k8s.io/client-go/informers"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"os"
@@ -33,4 +36,30 @@ func K8sRestConfig() *rest.Config {
 	}
 	//config.Insecure=true
 	return config
+}
+
+//初始化client-go客户端
+func InitClient() *kubernetes.Clientset {
+	c, err := kubernetes.NewForConfig(K8sRestConfig())
+	c.RESTClient().GetRateLimiter()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return c
+}
+
+var Factory informers.SharedInformerFactory
+
+var K8sClient *kubernetes.Clientset
+
+func K8sInitInformer() {
+	K8sClient = InitClient()
+	Factory = informers.NewSharedInformerFactory(K8sClient, 0)
+	Factory = informers.NewSharedInformerFactory(InitClient(), 0)
+	IngressInformer := Factory.Networking().V1().Ingresses() //监听Ingress
+	// 暂时不写自己的 回调
+	IngressInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{})
+	stopCh := make(chan struct{})
+	Factory.Start(stopCh)
+	Factory.WaitForCacheSync(stopCh)
 }

@@ -7,9 +7,11 @@ import (
 )
 
 const (
-	ApiGroup     = "apis.jtthink.com"
-	ApiVersion   = "v1beta1"
-	ResourceName = "myingresses"
+	ApiGroup           = "apis.jtthink.com"
+	ApiVersion         = "v1beta1"
+	ResourceName       = "myingresses"
+	ResourceKind       = "MyIngress"
+	ApiGroupAndVersion = ApiGroup + "/" + ApiVersion
 )
 
 // SchemeGroupVersion is group version used to register these objects

@@ -89,3 +89,22 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
     </tr>
 </table>
 
+### 将内容修改为搜索系统内的ingress
+
+使用`Informer`返回系统内的`ingress`数据，不在用之前的内存模拟数据
+
+部署一个角色 `kb apply -f yamls/rbac.yaml`，因为要在内部获取数据，并且设置环境变量`release=1`，因为代码内有这个环境变量获取内部角色
+
+见 `v2.1`
+
+### 根据myingress新增创建真实的ingress
+
+`kb apply -f yaml/rabc/yaml` 新增了`ingress`操作权限
+
+`kb apply -f yamls/mi.yaml` 创建了`mi`资源后，会自动增加一个`ingress`
+
+
+
+见`v2.2`
+
+
