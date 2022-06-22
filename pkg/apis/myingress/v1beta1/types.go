@@ -50,5 +50,8 @@ func NewMyIngressList() *MyIngressList {
 		Kind:    "MyIngressList",
 	})
 	return list
-
 }
+
+//func(*MyIngressList) ConvertToTable(ctx context.Context, object runtime.Object, tableOptions runtime.Object) (*metav1.Table, error)  {
+//
+//}

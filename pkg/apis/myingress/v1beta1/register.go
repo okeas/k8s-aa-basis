@@ -9,13 +9,14 @@ import (
 const (
 	ApiGroup           = "apis.jtthink.com"
 	ApiVersion         = "v1beta1"
+	ApiGroupAndVersion = ApiGroup + "/" + ApiVersion
 	ResourceName       = "myingresses"
 	ResourceKind       = "MyIngress"
-	ApiGroupAndVersion = ApiGroup + "/" + ApiVersion
 )
 
 // SchemeGroupVersion is group version used to register these objects
 var SchemeGroupVersion = schema.GroupVersion{Group: ApiGroup, Version: ApiVersion}
+var SchemeGroupResource = schema.GroupResource{Group: ApiGroup, Resource: ResourceName}
 
 // Kind takes an unqualified kind and returns back a Group qualified GroupKind
 func Kind(kind string) schema.GroupKind {
