@@ -106,3 +106,14 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 见`v2.2`
 
 
+## v3本地运行apisever
+
+删除旧方式 `kb delete -f yamls/api.yaml && kb delete -f yamls/deploy.yaml `
+
+运行`go run test.go`
+
+请求`https://localhost:6443/apis/apis.jtthink.com/v1beta1/namespaces/default/myingresses/test`是无权限的
+
+使用`kb --kubeconfig ./local_config --insecure-skip-tls-verify=true get myingresses test`
+
+见`v3.0`
