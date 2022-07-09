@@ -22,8 +22,7 @@ var _ rest.StandardStorage = &store{}
 var _ rest.Scoper = &store{}
 var _ rest.Storage = &store{}
 
-func NewMyStore(groupResource schema.GroupResource, isNamespaced bool,
-	tc rest.TableConvertor) rest.Storage {
+func NewMyStore(groupResource schema.GroupResource, isNamespaced bool, tc rest.TableConvertor) rest.Storage {
 
 	return &store{
 		defaultQualifiedResource: groupResource,

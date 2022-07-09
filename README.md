@@ -110,6 +110,8 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 
 删除旧方式 `kb delete -f yamls/api.yaml && kb delete -f yamls/deploy.yaml `
 
+可以不用注册资源，直接到自定义apiserver内运行
+
 运行`go run test.go`
 
 请求 `https://localhost:6443/apis/apis.jtthink.com/v1beta1/namespaces/default/myingresses/test` 是无权限的
