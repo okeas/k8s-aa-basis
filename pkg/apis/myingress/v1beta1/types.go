@@ -8,6 +8,7 @@ import (
 
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:openapi-gen=true
 
 // MyIngress
 type MyIngress struct {
@@ -21,9 +22,6 @@ type MyIngress struct {
 func (*MyIngress) New() runtime.Object {
 	return &MyIngress{}
 }
-func (*MyIngress) NamespaceScoped() bool {
-	return true
-}
 
 type MyIngressSpec struct {
 	Host    string `json:"host,omitempty"`
@@ -32,6 +30,7 @@ type MyIngressSpec struct {
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:openapi-gen=true
 
 // MyIngressList
 type MyIngressList struct {
@@ -39,11 +38,12 @@ type MyIngressList struct {
 	// +optional
 	metav1.ListMeta `json:"metadata,omitempty"`
 
-	Items []*MyIngress `json:"items"`
+	Items []MyIngress `json:"items"` //这里不能使用指针
 }
 
-func NewMyIngressList() *MyIngressList {
-	list := &MyIngressList{}
+func NewMyIngressList() MyIngressList {
+
+	list := MyIngressList{}
 	list.SetGroupVersionKind(schema.GroupVersionKind{
 		Version: SchemeGroupVersion.Version,
 		Group:   SchemeGroupVersion.Group,
@@ -51,7 +51,3 @@ func NewMyIngressList() *MyIngressList {
 	})
 	return list
 }
-
-//func(*MyIngressList) ConvertToTable(ctx context.Context, object runtime.Object, tableOptions runtime.Object) (*metav1.Table, error)  {
-//
-//}

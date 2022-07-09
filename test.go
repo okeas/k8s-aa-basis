@@ -7,6 +7,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+	"k8s.io/apiserver/pkg/endpoints/openapi"
 	"k8s.io/apiserver/pkg/registry/rest"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	genericoptions "k8s.io/apiserver/pkg/server/options"
@@ -15,6 +16,7 @@ import (
 )
 
 const RemoteKubeConfig = "/Users/zx/.kube/config"
+const defaultEtcdPathPrefix = "/registry/myapi.jtthink.com"
 
 var (
 	// Scheme 定义了资源序列化和反序列化的方法以及资源类型和版本的对应关系
@@ -26,7 +28,7 @@ var (
 //推荐配置 模板
 func getRcOpt() *genericoptions.RecommendedOptions {
 	rc := genericoptions.NewRecommendedOptions(
-		"",
+		defaultEtcdPathPrefix,
 		Codecs.LegacyCodec(v1beta1.SchemeGroupVersion), //JSON格式的编码器
 	)
 
@@ -35,16 +37,24 @@ func getRcOpt() *genericoptions.RecommendedOptions {
 		CertDirectory: "./certs",
 		PairName:      "aaserver",
 	}
+	//直接写死 省的烦
+	rc.Etcd.StorageConfig.Transport.ServerList = []string{"http://192.168.33.10:12379"}
 	rc.CoreAPI.CoreAPIKubeconfigPath = RemoteKubeConfig
+
 	rc.Authentication.RemoteKubeConfigFile = RemoteKubeConfig
 	rc.Authorization.RemoteKubeConfigFile = RemoteKubeConfig
+
+	//如果不需要任何 主k8s apiserver依赖。可以加入如下代码  begin
+	rc.CoreAPI = nil
+	rc.Admission = nil
+	rc.Authorization = nil
+	rc.Authentication = nil
+	//如果不需要任何 主k8s apiserver依赖。可以加入如下代码   end
+
 	err := rc.SecureServing.MaybeDefaultWithSelfSignedCerts(
 		"0.0.0.0",
-		nil, []net.IP{
-			net.ParseIP("127.0.0.1"),
-			//netutils.ParseIPSloppy("127.0.0.1")
-		})
-
+		nil, []net.IP{net.ParseIP("127.0.0.1")})
+	//netutils.ParseIPSloppy("127.0.0.1")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -69,17 +79,15 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	gvi := v1beta1.SchemeGroupVersion
+	gvi.Version = runtime.APIVersionInternal
+	Scheme.AddKnownTypes(gvi, &v1beta1.MyIngress{}, &v1beta1.MyIngressList{})
+
 	agi := genericapiserver.NewDefaultAPIGroupInfo(
 		v1beta1.SchemeGroupVersion.Group,
 		Scheme,
 		metav1.ParameterCodec, Codecs)
-	//定义存储 (自定义 存储)
-	resources := map[string]rest.Storage{
-		"myingresses": store.NewMyStore(v1beta1.SchemeGroupResource, true,
-			rest.NewDefaultTableConvertor(v1beta1.SchemeGroupResource)),
-	}
-	//设置存储
-	agi.VersionedResourcesStorageMap[v1beta1.SchemeGroupVersion.Version] = resources
+
 	//生成 apiserver 的推荐配置（默认配置)
 	config := genericapiserver.NewRecommendedConfig(Codecs)
 
@@ -87,9 +95,25 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	config.OpenAPIConfig = genericapiserver.DefaultOpenAPIConfig(v1beta1.GetOpenAPIDefinitions,
+		openapi.NewDefinitionNamer(Scheme))
+	//config.OpenAPIConfig.Info.Title = "MyIngress"
+	//config.OpenAPIConfig.Info.Version = "v1"
+	completeConfig := config.Complete()
+	//定义存储 (自定义 存储)
+	//resources := map[string]rest.Storage{
+	//	"myingresses": store.NewMyStore(v1beta1.SchemeGroupResource, true,
+	//		rest.NewDefaultTableConvertor(v1beta1.SchemeGroupResource)),
+	//}
 
+	resources := map[string]rest.Storage{
+		"myingresses": store.RESTInPeace(store.NewREST(Scheme,
+			completeConfig.RESTOptionsGetter)),
+	}
+	//设置存储
+	agi.VersionedResourcesStorageMap[v1beta1.SchemeGroupVersion.Version] = resources
 	// apiserver
-	server, err := config.Complete().
+	server, err := completeConfig.
 		New("myapi", genericapiserver.NewEmptyDelegate())
 	if err != nil {
 		log.Fatalln(err)

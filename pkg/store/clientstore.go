@@ -57,7 +57,7 @@ func (cs *ClientStore) ListByNsOrAll(ns string) (*v1beta1.MyIngressList, error) 
 	}
 	myList := &v1beta1.MyIngressList{}
 	for _, ingress := range list {
-		myList.Items = append(myList.Items, &v1beta1.MyIngress{
+		myList.Items = append(myList.Items, v1beta1.MyIngress{
 			TypeMeta:   ingress.TypeMeta,
 			ObjectMeta: ingress.ObjectMeta,
 			Spec: v1beta1.MyIngressSpec{

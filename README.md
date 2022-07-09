@@ -119,3 +119,39 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 使用`kb --kubeconfig ./local_config --insecure-skip-tls-verify=true get myingresses test`
 
 见`v3.0`
+
+
+## 储存到etcd
+
+本地运行etcd
+
+```shell
+docker run -d \
+  -p 12379:2379 \
+  -p 12380:2380 \
+  -v /var/myetcd/data:/etcd-data/member \
+  --name exam-etcd \
+   quay.io/coreos/etcd:latest \
+  /usr/local/bin/etcd \
+  --name s1 \
+  --data-dir /etcd-data \
+  --listen-client-urls http://0.0.0.0:2379 \
+  --advertise-client-urls http://0.0.0.0:2379 \
+  --listen-peer-urls http://0.0.0.0:2380 \
+  --initial-advertise-peer-urls http://0.0.0.0:2380 \
+  --initial-cluster s1=http://0.0.0.0:2380 \
+  --initial-cluster-token tkn \
+  --initial-cluster-state new
+```
+
+更新了`test.go`和`v1beta1`文件夹，新增了文件`zz_generated.openapi.go`，修改了改文件内资源名称和目录
+
+把`test.go`内`etcd`目录改为本地`etcd`地址
+
+执行`go run test.go`
+
+查看本地服务器的拥有的资源`kb --kubeconfig ./local_config --insecure-skip-tls-verify=true api-resources`
+
+查看资源内容，目前为空`kb --kubeconfig ./local_config --insecure-skip-tls-verify=true get mi`
+
+见`v3.2`
