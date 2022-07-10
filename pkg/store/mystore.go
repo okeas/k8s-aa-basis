@@ -2,7 +2,7 @@ package store
 
 import (
 	"context"
-	"k8s-aa-basis/pkg/apis/myingress/v1beta1"
+	"github.com/boyfoo/k8s-aa-basis/pkg/apis/myingress/v1beta1"
 	"reflect"
 	"sync"
 

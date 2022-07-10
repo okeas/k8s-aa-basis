@@ -1,4 +1,4 @@
-module k8s-aa-basis
+module github.com/boyfoo/k8s-aa-basis
 
 go 1.15
 

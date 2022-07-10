@@ -2,8 +2,8 @@ package store
 
 import (
 	"fmt"
-	"k8s-aa-basis/pkg/apis/myingress/v1beta1"
-	"k8s-aa-basis/pkg/k8sconfig"
+	"github.com/boyfoo/k8s-aa-basis/pkg/apis/myingress/v1beta1"
+	"github.com/boyfoo/k8s-aa-basis/pkg/k8sconfig"
 	v1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/labels"
 )

@@ -1,4 +1,4 @@
-# k8s-aa-basis
+# github.com/boyfoo/k8s-aa-basis
 
 ### 基础介绍 V1
 
@@ -105,7 +105,6 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 
 见`v2.2`
 
-
 ## v3本地运行apisever
 
 删除旧方式 `kb delete -f yamls/api.yaml && kb delete -f yamls/deploy.yaml `
@@ -120,8 +119,9 @@ $ openssl x509 -req -days 3650 -in aaserver.csr -CA /etc/k8s/certs/ca.pem -CAkey
 
 见`v3.0`
 
-
 ## 储存到etcd
+
+新增`zz_generated.openapi.go`文件，`types.go`内的`MyIngress`都改为非引用
 
 本地运行etcd
 
@@ -154,4 +154,17 @@ docker run -d \
 
 查看资源内容，目前为空`kb --kubeconfig ./local_config --insecure-skip-tls-verify=true get mi`
 
+部署内容 `kb --kubeconfig ./local_config --insecure-skip-tls-verify=true apply -f yamls/mi.yaml`
 见`v3.2`
+
+#### 如何生成`zz_generated.openapi.go` ：
+
+在`doc.go`和`types.go`加入`// +k8s:openapi-gen=true`
+
+进入`go path`目录下的`src/k8s.io/` 执行`git clone git@github.com:kubernetes/kube-openapi.git`
+
+然后 `cd kube-openapi` 执行 `go install cmd/openapi-gen/openapi-gen.go`
+
+回到当前项目目录
+
+

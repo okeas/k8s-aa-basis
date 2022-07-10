@@ -1,7 +1,7 @@
 package store
 
 import (
-	"k8s-aa-basis/pkg/apis/myingress/v1beta1"
+	"github.com/boyfoo/k8s-aa-basis/pkg/apis/myingress/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"time"
 )

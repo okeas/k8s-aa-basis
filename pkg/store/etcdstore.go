@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
-	"k8s-aa-basis/pkg/apis/myingress/v1beta1"
+	"github.com/boyfoo/k8s-aa-basis/pkg/apis/myingress/v1beta1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"

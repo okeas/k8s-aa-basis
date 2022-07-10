@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/boyfoo/k8s-aa-basis/pkg/apis/myingress/v1beta1"
+	"github.com/boyfoo/k8s-aa-basis/pkg/builders"
+	"github.com/boyfoo/k8s-aa-basis/pkg/k8sconfig"
+	"github.com/boyfoo/k8s-aa-basis/pkg/store"
+	"github.com/boyfoo/k8s-aa-basis/pkg/utils"
 	"github.com/gin-gonic/gin"
-	"k8s-aa-basis/pkg/apis/myingress/v1beta1"
-	"k8s-aa-basis/pkg/builders"
-	"k8s-aa-basis/pkg/k8sconfig"
-	"k8s-aa-basis/pkg/store"
-	"k8s-aa-basis/pkg/utils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	"strings"
