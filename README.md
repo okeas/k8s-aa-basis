@@ -165,6 +165,8 @@ docker run -d \
 
 然后 `cd kube-openapi` 执行 `go install cmd/openapi-gen/openapi-gen.go`
 
-回到当前项目目录
+回到当前项目目录执行：
 
+`openapi-gen --input-dirs "k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/apimachinery/pkg/runtime,k8s.io/apimachinery/pkg/version" --input-dirs github.com/boyfoo/k8s-aa-basis/pkg/apis/myingress/v1beta1 -p github.com/boyfoo/k8s-aa-basis/pkg/apis/myingress/v1beta1 -O zz_generated.openapi`
 
+最终会在`gopath src`生成一个，拷贝到自己的文件夹来
